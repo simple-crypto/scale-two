@@ -1,0 +1,39 @@
+\newlength{\h}
+\setlength{\h}{.9cm}
+
+\newcommand{\enc} {\mathsf{AES} }
+\newcommand{\drawbc}[5]{%
+	% #1: position
+	% #2: node name
+	% #3: label
+	% #4: color
+	% #5: size (width and height of the square)
+
+	% Draw square node
+	\node[draw, rectangle, minimum width=#5, minimum height=#5,
+		inner sep=0pt, align=center, anchor=center, color=#4] (#2) at (#1) {\vphantom{Ay}#3};
+
+	% Triangle perfectly embedded on left side
+	\draw[fill=#4, draw=#4]
+	($(#2.west) + (0.02, 0.3*#5)$) --  % upper point
+	($(#2.west) + (0.02, -0.3*#5)$) -- % lower point
+	($(#2.west) + (0.15cm, 0)$) --     % inner tip (fixed width)
+	cycle;
+}
+
+
+
+\newcommand{\BCbloc}[4][]{%
+% Dessine le noeud rectangle
+\node[#1, draw, rectangle, minimum width=\h, minimum height=\h, anchor=center] (#3) at #2 {#4};
+\coordinate (#3/center) at (#3.center);
+\coordinate (#3/north) at (#3.north);
+\coordinate (#3/east) at (#3.east);
+\coordinate (#3/south) at (#3.south);
+% Coordonnées du coin inférieur gauche du rectangle pour placer le triangle
+\draw[fill=black]
+($(#3.north west)!0.15!(#3.north east) - (0, 0.025)$)  -- % Milieu supérieur du côté gauche
+($(#3.north east)!0.15!(#3.north west) - (0, 0.025)$) -- % Milieu inférieur du côté gauche
+($($(#3.north west)!0.5!(#3.north east)$) - (0, 0.6*0.4*\h)$) -- % Point intérieur (sommet du triangle)
+cycle; % Ferme le triangle
+}

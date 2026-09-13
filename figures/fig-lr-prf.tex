@@ -1,0 +1,29 @@
+\documentclass[varwidth=true, border=10pt, convert={size=640x}]{standalone}
+
+\usepackage{amsmath}
+\usepackage{tikz}
+\usetikzlibrary{calc, positioning}
+\usepackage{graphicx} % Pour inclure des images
+\usepackage{caption}  % Pour les légendes des images
+\usepackage{subcaption} % Pour gérer les sous-figures
+\usepackage[colorinlistoftodos,prependcaption,textsize=tiny]{todonotes}
+\usepackage{pgf}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepgfplotslibrary{groupplots}
+\usetikzlibrary{arrows.meta} % Needed for 'Circle' arrow tip
+\usetikzlibrary{decorations.pathmorphing}
+
+\input{tikz-lib.tex}
+
+\begin{document}
+
+\begin{figure}
+    \centering
+    \resizebox{0.99\textwidth}{!}{
+        \input{lr-prf.tex}
+    }
+    \caption*{Example of instantiation, processing the input per words of 2 bits}
+\end{figure}
+
+\end{document}

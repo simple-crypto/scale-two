@@ -1,4 +1,4 @@
-# SCALE-II
+# SCALE-I
 
 This repository contains the jupyter notebook for the SCALE-II training.
 
@@ -8,6 +8,8 @@ The following dependencies are required in order to run the notebook
 
 + [Python3](https://www.python.org/downloads/) for installation (version 3.12.3 tested)
 + Python3 venv package (must be installed independently as `python3-venv` on Debian/Ubuntu, installed by default elsewhere)
+
+Besides, the dataset used in this tutorial can be found [here](https://enigma.elen.ucl.ac.be/dsm/sharing/VMx9J3Xkc)
 
 ## Getting started
 

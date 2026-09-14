@@ -11,7 +11,7 @@ import math
 
 from utils_scale import utils_eval, utils_ta
 
-def display_snr_SBout(snrs, traces):
+def display_snr_SBout(snrs, traces, use_log_scale=False):
     mtraces = np.mean(traces,axis=0)
 
     f = plt.figure()
@@ -24,6 +24,7 @@ def display_snr_SBout(snrs, traces):
     ax1.plot(snrs.T)
     ax1.set_xlabel("Time")
     ax1.set_ylabel("SNR")
+    ax1.set_yscale("log", base=10)
 
 def display_snr_results(snrs, traces):
     display_snr_SBout(snrs,traces)

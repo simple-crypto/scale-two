@@ -7,7 +7,7 @@ class MultiInformationEstimator:
         self._nv = prs.shape[0]
         self._ntraces = prs.shape[1]
         self._logprob_mean = np.mean(prs, axis=1)
-        self._logprob_varN = self._ntraces * np.var(prs, axis=1)
+        self._logprob_varN = np.var(prs, axis=1)
         if enth is None:
             self.enth = np.log2(nc)
         else:
@@ -31,7 +31,7 @@ class MultiInformationEstimator:
         res._logprob_varN = (
             self._logprob_varN
             + other._logprob_varN
-            + (self._ntraces * other._ntraces / res._ntraces) * delta**2
+            + (self._ntraces * other._ntraces / res._ntraces) * (delta**2)
         )
         return res
 
@@ -39,7 +39,7 @@ class MultiInformationEstimator:
         return self.enth + self._logprob_mean
 
     def info_std(self):
-        return np.sqrt(self._logprob_varN / self._ntraces**2)
+        return np.sqrt(self._logprob_varN / (self._ntraces - 1))
 
     @classmethod
     def from_legacy(cls, old):

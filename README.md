@@ -1,4 +1,4 @@
-# SCALE-I
+# SCALE-II
 
 This repository contains the jupyter notebook for the SCALE-II training.
 

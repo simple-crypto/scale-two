@@ -24,7 +24,8 @@ def display_snr_SBout(snrs, traces, use_log_scale=False):
     ax1.plot(snrs.T)
     ax1.set_xlabel("Time")
     ax1.set_ylabel("SNR")
-    ax1.set_yscale("log", base=10)
+    if use_log_scale:
+        ax1.set_yscale("log", base=10)
 
 def display_snr_results(snrs, traces):
     display_snr_SBout(snrs,traces)

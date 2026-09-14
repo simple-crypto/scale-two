@@ -39,7 +39,7 @@ class MultiInformationEstimator:
         return self.enth + self._logprob_mean
 
     def info_std(self):
-        return np.sqrt(self._logprob_varN / self._ntraces)
+        return np.sqrt(self._logprob_varN / (self._ntraces**2))
 
     @classmethod
     def from_legacy(cls, old):

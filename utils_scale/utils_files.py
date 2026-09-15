@@ -18,8 +18,8 @@ DS_CFG={
     "sw-aes-RIoff_atcks": [f"{RELATIVE_DIR_FILES}/scale2-dataset-26-dev-CT1-sept-RIno-Os-RI/validation{e}/data.npz" for e in range(5)],
     "sw-aes-RIon_training": f"{RELATIVE_DIR_FILES}/scale2-dataset-26-dev-CT1-sept-RIon-Os-RI/training0/data.npz",
     "sw-aes-RIon_atcks": [f"{RELATIVE_DIR_FILES}/scale2-dataset-26-dev-CT1-sept-RIon-Os-RI/validation{e}/data.npz" for e in range(5)],
-    "sw-aes-SHon_training": f"{RELATIVE_DIR_FILES}/scale2-dataset-26-dev-CT1-sept-Os-FP-RI/training0/data.npz",
-    "sw-aes-SHon_atcks": [f"{RELATIVE_DIR_FILES}/scale2-dataset-26-dev-CT1-sept-Os-FP-RI/validation{e}/data.npz" for e in range(5)],
+    "sw-aes-SHon_training": f"{RELATIVE_DIR_FILES}/scale2-dataset-26-dev-CT1-sept-Os-FPon-RI/training0/data.npz",
+    "sw-aes-SHon_atcks": [f"{RELATIVE_DIR_FILES}/scale2-dataset-26-dev-CT1-sept-Os-FPon-RI/validation{e}/data.npz" for e in range(5)],
     "sw-aes-MSK_training": f"{RELATIVE_DIR_FILES}/scale2-dataset-26-dev-CT1-sept-Os-pAKSB-MSK/training0/data.npz",
     "sw-aes-MSK_atcks": [f"{RELATIVE_DIR_FILES}/scale2-dataset-26-dev-CT1-sept-Os-pAKSB-MSK/validation{e}/data.npz" for e in range(5)],
 

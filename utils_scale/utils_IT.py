@@ -39,6 +39,33 @@ def pi_LDA_multi_TA(train_trs, train_labels, test_trs, test_labels, npois, ndim,
     # Compute the PI
     return MPIC
 
+
+def pi_LDA_multi_TA_RSI(train_trs, train_labels_rsi, train_labels_interns, test_trs, test_labels, params_rsi, params_interns, nclasses=256, chunk_size=1000):
+    # Build model
+    models = utils_ta.mlda_RSI_model_fit(
+        train_trs,
+        train_labels_rsi,
+        train_labels_interns,
+        params_rsi,
+        params_interns,
+        chunk_size=chunk_size
+    )
+    # Perform the IT computation 
+    MPIC = utils_infometrics.MultiPIComputer(nclasses, test_labels.shape[1])
+    csizes = utils_ta.resolve_chunk_size(test_trs.shape[0], chunk_size)
+    off = 0
+    for cs in csizes:
+        # Compute log2 prob 
+        log2pr = models.predict_log2_proba_class(
+            test_trs[off:off+cs].astype(np.int16),
+            test_labels[off:off+cs].astype(np.uint16)
+        )
+        MPIC.fit_from_log2_proba_class(log2pr)
+        off += cs
+
+    # Compute the PI
+    return MPIC
+
 def ti_LDA_multi_TA(train_trs, train_labels, npois, ndim, nclasses=256, chunk_size=1000):
     """
     train_trs: the training traces as an array of shape (train_ntraces, nsamples)
@@ -50,6 +77,9 @@ def ti_LDA_multi_TA(train_trs, train_labels, npois, ndim, nclasses=256, chunk_si
         - `lprobas` is a matrix of shape (nvars, test_ntraces) containing the log2 proba used to compute the PI
     """
     return pi_LDA_multi_TA(train_trs, train_labels, train_trs, train_labels, npois, ndim, nclasses=nclasses, chunk_size=chunk_size)
+
+def ti_LDA_multi_TA_RSI(train_trs, train_labels_rsi, train_labels_interns, train_labels, params_rsi, params_interns, nclasses=256, chunk_size=1000):
+    return pi_LDA_multi_TA_RSI(train_trs, train_labels_rsi, train_labels_interns, train_trs, train_labels, params_rsi, params_interns, nclasses=nclasses, chunk_size=chunk_size)
 
 def explore_params_LDA(traces, labels, ntraces_pi, explo_npois, explo_ndims, q_t=None, nclasses=256, chunk_size=1000):
     # Verify the shape 
@@ -104,6 +134,27 @@ def compute_PI_curves(training_traces, training_labels, test_traces, test_labels
         mB=mB,
         MB=MB
     )
+
+def compute_PI_curves_RSI(train_trs, train_labels_rsi, train_labels_interns, test_trs, test_labels, qt_s, param_sets_rsi, param_sets_interns, nclasses=256, chunk_size=1000):
+    # Create the wrapped PI function
+    w_pi_method = lambda a,b,c,d,e: pi_LDA_multi_TA_RSI(a,b,c,d,e, param_sets_rsi, param_sets_interns, nclasses=nclasses, chunk_size=chunk_size)
+    # Compute the PIs
+    res = test_scale.compute_pi_estimations_RSI(
+        train_trs,
+        train_labels_rsi,
+        train_labels_interns,
+        test_trs,
+        test_labels,
+        w_pi_method,
+        qt_s
+    )
+    return dict(
+        dtype="PI",
+        qt_s=qt_s,
+        it=res["it"],
+        mB=res["mB"],
+        MB=res["MB"]
+    )
     
 def compute_TI_curves(training_traces, training_labels, qt_s, param_sets, nclasses=256, chunk_size=1000):
     # First create the mapping of parameters set to enable efficient grouping of same params
@@ -138,4 +189,24 @@ def compute_TI_curves(training_traces, training_labels, qt_s, param_sets, nclass
         it=tis,
         mB=mB,
         MB=MB
+    )
+
+def compute_TI_curves_RSI(train_trs, train_labels_rsi, train_labels_interns, train_labels, qt_s, param_sets_rsi, param_sets_interns, nclasses=256, chunk_size=1000):
+    # Create the wrapped PI function
+    w_ti_method = lambda a,b,c,d: ti_LDA_multi_TA_RSI(a,b,c,d, param_sets_rsi, param_sets_interns, nclasses=nclasses, chunk_size=chunk_size)
+    # Compute the PIs
+    res = test_scale.compute_ti_estimations_RSI(
+        train_trs,
+        train_labels_rsi,
+        train_labels_interns,
+        train_labels,
+        w_ti_method,
+        qt_s
+    )
+    return dict(
+        dtype="TI",
+        qt_s=qt_s,
+        it=res["it"],
+        mB=res["mB"],
+        MB=res["MB"]
     )

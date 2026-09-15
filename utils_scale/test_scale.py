@@ -490,6 +490,40 @@ def compute_pi_estimations(training_traces, training_labels, test_traces, test_l
         MB=MB
     )
 
+def compute_pi_estimations_RSI(training_traces, training_labels_rsi, training_labels_interns, test_traces, test_labels, pi_method, qt_s, nclasses=256):
+    # Fetch config
+    qt_max, n_p = training_labels_interns.shape
+    # Some config
+    assert max(qt_s)<=qt_max, "The provided training data complexities cannot be reached given the amount of traces in the test set"
+    # Allocate memory
+    pis= np.zeros([n_p, len(qt_s)])
+    mB = np.zeros([n_p, len(qt_s)])
+    MB = np.zeros([n_p, len(qt_s)])
+    # Iterate over qt_s
+    for qt_i, qt in tqdm.tqdm(enumerate(qt_s), desc="PI computations", total=len(qt_s)):
+        # Compute PI univariate
+        mpic = pi_method(
+            training_traces[:qt, :], 
+            training_labels_rsi[:qt], 
+            training_labels_interns[:qt, :], 
+            test_traces, 
+            test_labels,
+        )
+        pis[:, qt_i] = mpic.get_pi()
+        std_pi = mpic.get_pi_std()
+        # Compute 2sigmas interval
+        mB[:, qt_i] = pis[:, qt_i] - (2*std_pi)
+        MB[:, qt_i] = pis[:, qt_i] + (2*std_pi)
+
+    # Return results
+    return dict(
+        dtype="PI",
+        qt_s=qt_s,
+        it=pis,
+        mB=mB,
+        MB=MB
+    )
+
 def compute_ti_estimations(training_traces, training_labels, ti_method, qt_s, nclasses=256):
     # Fetch config
     qt_max, n_p = training_labels.shape
@@ -513,6 +547,33 @@ def compute_ti_estimations(training_traces, training_labels, ti_method, qt_s, nc
         mB=None,
         MB=None
     )
+
+def compute_ti_estimations_RSI(training_traces, training_labels_rsi, training_labels_interns, training_labels, ti_method, qt_s, nclasses=256):
+    # Fetch config
+    qt_max, n_p = training_labels_interns.shape
+    # Some config
+    assert max(qt_s)<=qt_max, "The provided training data complexities cannot be reached given the amount of traces in the test set"
+    # Allocate memory
+    tis= np.zeros([n_p, len(qt_s)])
+    # Iterate over qt_s
+    for qt_i, qt in tqdm.tqdm(enumerate(qt_s), desc="TI computations", total=len(qt_s)):
+        # Compute PI univariate
+        mpic = ti_method(
+            training_traces[:qt, :], 
+            training_labels_rsi[:qt], 
+            training_labels_interns[:qt], 
+            training_labels[:qt], 
+        )
+        tis[:, qt_i] = mpic.get_pi()
+    # Return results
+    return dict(
+        dtype="TI",
+        qt_s=qt_s,
+        it=tis,
+        mB=None,
+        MB=None
+    )
+
 
 class ITDisplayEntry:
     def __init__(self, results, modelID):

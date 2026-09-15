@@ -468,8 +468,6 @@ class MultiLdaAccParams:
             else:
                 psets[(npois, ndims)] = [id]
 
-        print(psets)
-
         # Create the LDA instances 
         self.mods = []
         for (npois, ndims), ids in psets.items():
@@ -516,6 +514,38 @@ def mlda_params_fit(traces, labels, params_set, chunk_size=1000, nc=256):
         off += cs
     # Return the LDA
     return MultiLdaParams(mlda_acc)
+
+### Shuffling exhaustive perm model 
+class ModelRSI:
+    def __init__(self, mperm, minterns, chunk_size):
+        self.mperm = mperm
+        self.minterns = minterns
+        self.chunk_size = chunk_size # RESERVED
+
+    def predict_proba(self, traces): 
+        prs_perm = self.mperm.predict_proba(traces)
+        prs_inters = self.minterns.predict_proba(traces)
+        return RI_probas_intermediates(prs_inters, prs_perm[0, :, :])
+
+    def predict_log2_proba_class(self, traces, labels):
+        # nv x n x nc
+        l2prsall = np.log2(self.predict_proba(traces))
+        #
+        l2prs = np.zeros([labels.shape[1], labels.shape[0]])
+        # 
+        for nvi in range(labels.shape[1]):
+            for ni in range(labels.shape[0]):
+                l2prs[nvi, ni] = l2prsall[nvi, ni, labels[ni, nvi]]
+        return l2prs
+
+
+def mlda_RSI_model_fit(traces, labels_RSI, labels_interns, params_set_RSI, params_set_interns, chunk_size=1000):
+    # Fit the model for the RSI
+    model_RSI = mlda_params_fit(traces, labels_RSI[:,np.newaxis], params_set_RSI, chunk_size=chunk_size,nc=16)
+    # Fit the model for the interns 
+    model_inters = mlda_params_fit(traces, labels_interns, params_set_interns, chunk_size=chunk_size, nc=256)
+    return ModelRSI(model_RSI, model_inters, chunk_size)
+
 
 ### SASCA related
 def explo_SASCA_msk_pSB(patcks, mlda_pSB_shares, qas, f_SASCA, bidx=range(4)):
